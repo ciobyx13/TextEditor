@@ -58,7 +58,8 @@ public class DocumentBenchmarking {
 			 * 6. Print out the time it took to complete the loop in step 5 
 			 *      (on the same line as the first print statement) followed by a newline (\n) 
 			 */  
-			 
+			 System.out.print(numToCheck+"\t");
+			 String text = getStringFromFile(textfile, numToCheck);
 		}
 	
 	}
