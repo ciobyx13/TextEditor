@@ -40,6 +40,7 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	public void train(String sourceText)
 	{
 		List<String> tokens = getTokens("[a-zA-Z.!?]+", sourceText);
+		if (tokens.size() == 0) return;
 		ListNode starterNode = new ListNode(tokens.get(0));
 		this.starter = starterNode.getWord();
 		this.wordList.add(starterNode);
@@ -73,6 +74,7 @@ public class MarkovTextGeneratorLoL implements MarkovTextGenerator {
 	 */
 	@Override
 	public String generateText(int numWords) {
+		if (numWords <= 0) return "";
 		String output = starter;
 		String currentWord = starter;
 		for (int i = 1; i < numWords; i++) {
