@@ -1,6 +1,7 @@
 package spelling;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     public AutoCompleteDictionaryTrie()
 	{
 		root = new TrieNode();
+		size = 0;
 	}
 	
 	
@@ -39,8 +41,23 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
-	    return false;
+		TrieNode current = root;
+	    for (char c : word.toLowerCase().toCharArray()) {
+	    	if (current.getChild(c) != null) {
+	    		current = current.getChild(c);
+	    	}
+	    	else{
+	    		current = current.insert(c);
+	    	}
+	    }
+	    if (current.endsWord()) {
+		    return false;
+	    }
+	    else {
+	    	current.setEndsWord(true);
+	    	size++;
+		    return true;
+	    }
 	}
 	
 	/** 
@@ -49,8 +66,7 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
-	    //TODO: Implement this method
-	    return 0;
+	    return this.size;
 	}
 	
 	
@@ -59,8 +75,21 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	@Override
 	public boolean isWord(String s) 
 	{
-	    // TODO: Implement this method
-		return false;
+		TrieNode current = root;
+	    for (char c : s.toLowerCase().toCharArray()) {
+	    	if (current.getChild(c) != null) {
+	    		current = current.getChild(c);
+	    	}
+	    	else{
+	    		return false;
+	    	}
+	    }
+	    if (current.endsWord()) {
+		    return true;
+	    }
+	    else {
+		    return false;
+	    }
 	}
 
 	/** 
@@ -86,7 +115,6 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
      */@Override
      public List<String> predictCompletions(String prefix, int numCompletions) 
      {
-    	 // TODO: Implement this method
     	 // This method should implement the following algorithm:
     	 // 1. Find the stem in the trie.  If the stem does not appear in the trie, return an
     	 //    empty list
@@ -100,8 +128,24 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
     	 //       If it is a word, add it to the completions list
     	 //       Add all of its child nodes to the back of the queue
     	 // Return the list of completions
-    	 
-         return null;
+  	    LinkedList<String> predictCompletions = new LinkedList<String>();
+    	TrieNode current = root;
+ 	    for (char c : prefix.toLowerCase().toCharArray()) {
+ 	    	if (current.getChild(c) != null) {
+ 	    		current = current.getChild(c);
+ 	    	}
+ 	    	else return predictCompletions;
+ 	    }
+ 	    Queue<TrieNode> queue = new LinkedList<TrieNode>();
+ 	    queue.add(current);
+ 	    while (!queue.isEmpty() && predictCompletions.size() < numCompletions) {
+ 	    	TrieNode node = queue.remove();
+ 	    	if (node.endsWord()) predictCompletions.add(node.getText());
+ 	    	for (Character c : node.getValidNextCharacters()) {
+ 	    		queue.add(node.getChild(c));
+ 	    	}
+ 	    }
+ 	    return predictCompletions;
      }
 
  	// For debugging
