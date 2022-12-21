@@ -7,6 +7,7 @@ package spelling;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * WPTree implements WordPath by dynamically creating a tree of words during a Breadth First
@@ -22,14 +23,15 @@ public class WPTree implements WordPath {
 	// used to search for nearby Words
 	private NearbyWords nw; 
 	
+	private static final long THRESHOLD = 1000;
+	
 	// This constructor is used by the Text Editor Application
 	// You'll need to create your own NearbyWords object here.
 	public WPTree () {
 		this.root = null;
-		// TODO initialize a NearbyWords object
-		// Dictionary d = new DictionaryHashSet();
-		// DictionaryLoader.loadDictionary(d, "data/dict.txt");
-		// this.nw = new NearbyWords(d);
+		Dictionary d = new DictionaryHashSet();
+		DictionaryLoader.loadDictionary(d, "data/dict.txt");
+		nw = new NearbyWords(d);
 	}
 	
 	//This constructor will be used by the grader code
@@ -41,8 +43,27 @@ public class WPTree implements WordPath {
 	// see method description in WordPath interface
 	public List<String> findPath(String word1, String word2) 
 	{
-	    // TODO: Implement this method.
-	    return new LinkedList<String>();
+		List<String> retList = new LinkedList<String>();
+		root = new WPTreeNode(word1, null);
+		WPTreeNode currentNode = root;
+		Queue<WPTreeNode> queue = new LinkedList<WPTreeNode>();
+		List<String> visited = new LinkedList<String>();
+		queue.add(currentNode);
+		visited.add(currentNode.getWord());
+		int searchCounter = 0;
+		while (!currentNode.getWord().equals(word2) && !queue.isEmpty()) {
+			currentNode = queue.remove();
+			List<String> nearbyWords = nw.distanceOne(currentNode.getWord(), true);
+			for (String s : nearbyWords) {
+				if (!visited.contains(s)) {
+					visited.add(s);
+					WPTreeNode child = currentNode.addChild(s);
+					queue.add(child);
+				}
+			}
+		}
+		if (currentNode.getWord().equals(word2)) retList = currentNode.buildPathToRoot();
+	    return retList;
 	}
 	
 	// Method to print a list of WPTreeNodes (useful for debugging)

@@ -27,7 +27,6 @@ public class MainApp extends Application {
 	private Stage primaryStage;
 	private BorderPane rootLayout;
 	
-	
 	// called at start of application
 	@Override
 	public void start(Stage primaryStage) {
